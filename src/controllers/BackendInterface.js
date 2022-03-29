@@ -18,6 +18,20 @@ export default class BackendInterface {
     }
 
 
+    async getModel() {
+        const url = this.domain + ":" + this.port + this.api + "/model";
+        return fetch(url, this.options)
+            .then(response => {
+                if(response.ok) {
+                    return response.json();
+                } else {
+                    console.log(response);
+                    return {name: "error", priceDifference: "error"};
+                }
+        });
+    } // end of getModel
+
+
     async getAccuracy() {
         const url = this.domain + ":" + this.port + this.api + "/accuracy";
         return fetch(url, this.options)
@@ -72,5 +86,6 @@ export default class BackendInterface {
                 }
         });
     } // end of getConfusionMatrix
+
 
 }

@@ -13,10 +13,11 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            model: {name: "loading", priceDifference: "loading"},
             predictions: null,
             groundTruths: null,
             currentPrediction: null,
-            accuracy: "-",
+            accuracy: "loading",
             confusionMatrix: null
         }
     } // end of constructor
@@ -24,6 +25,9 @@ class App extends React.Component {
 
     componentDidMount() {
         const bi = new BackendInterface("http://unexpected42.de", "1337", "/v4_1");
+        bi.getModel().then(model => {
+            this.setState({model: model});
+        });
         bi.getAccuracy().then(accuracy => {
             this.setState({
                 accuracy: accuracy.accuracy
@@ -64,7 +68,7 @@ class App extends React.Component {
                 >
                 <h1 className='display-4'>up-neutral-down 5m</h1>
                 <h2 className='lead' style={{fontSize: "30px"}}>BTC price prediction</h2>
-                <p>Current Accuracy: <strong>{this.state.accuracy}</strong></p>
+                <p>Model '<strong>{this.state.model.name}</strong>' - Price Difference: <strong>{this.state.model.priceDifference}</strong> - Current Accuracy: <strong>{this.state.accuracy}</strong></p>
                 <br/>
                 <div>
                 <h2 className='lead' style={{float: "left"}}>Latest Predictions</h2>
