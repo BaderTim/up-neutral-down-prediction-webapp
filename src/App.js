@@ -24,8 +24,8 @@ class App extends React.Component {
     render() {
         return (
             <div className="container App">
-                <h1 className='display-4'>5m BTC Price Prediction</h1>
-                <br/>
+                <h1 className='display-4'>up-neutral-down 5m</h1>
+                <h2 className='lead' style={{fontSize: "30px"}}>BTC price prediction</h2>
                 <p>Current Accuracy: <strong>{this.state.accuracy}</strong></p>
                 <br/>
                 <div>
@@ -51,7 +51,6 @@ class App extends React.Component {
                         </div>
                     )}
                 </div>
-                <br/>
                 <br/>
                 <div style={{display: "flex"}}>
                     <div style={{width: "60%"}}>
