@@ -28,25 +28,3 @@ jobs:
           FOLDER: build # The directory where your assets are generated
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub will automatically add this - you don't need to bother getting a token
           MESSAGE: "Build: ({sha}) {msg}" # The commit message
-
-      - uses: actions/checkout@v2
-      - name: Find and Replace JS
-        uses: jacobtomlinson/gha-find-replace@v2
-        with:
-          find: 'src="static/js'
-          replace: 'src="./static/js'
-          include: "**index.html"
-          
-      - name: Find and Replace CSS
-        uses: jacobtomlinson/gha-find-replace@v2
-        with:
-          find: 'href="static/css'
-          replace: 'href="./static/css'
-          include: "**index.html"
-          regex: false
-
-      - name: Push changes
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: prod
