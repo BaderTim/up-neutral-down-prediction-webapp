@@ -1,4 +1,3 @@
-import './App.css';
 import React from 'react';
 import { Spinner } from 'react-bootstrap';
 
@@ -20,7 +19,7 @@ class App extends React.Component {
             accuracy: "-",
             confusionMatrix: null
         }
-    }
+    } // end of constructor
 
 
     componentDidMount() {
@@ -48,13 +47,21 @@ class App extends React.Component {
                 confusionMatrix: confusionMatrix.confusionMatrix
             });
         });
-    }
+    } // end of componentDidMount
 
 
     render() {
 
         return (
-            <div className="container App">
+            <div className="container"
+                style={{
+                    marginTop: "1rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    maxWidth: "1000px",
+                }}
+                >
                 <h1 className='display-4'>up-neutral-down 5m</h1>
                 <h2 className='lead' style={{fontSize: "30px"}}>BTC price prediction</h2>
                 <p>Current Accuracy: <strong>{this.state.accuracy}</strong></p>
