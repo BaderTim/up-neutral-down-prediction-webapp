@@ -29,6 +29,7 @@ class App extends React.Component {
 
 
     render() {
+
         return (
             <div className="container App">
                 <h1 className='display-4'>up-neutral-down 5m</h1>
@@ -72,6 +73,7 @@ class App extends React.Component {
                 </div>
             </div>
         );
+        
     } // end of render
 
 
