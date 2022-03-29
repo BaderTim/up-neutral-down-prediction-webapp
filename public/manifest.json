@@ -12,7 +12,7 @@
             "sizes": "180x180"
         }
     ],
-    "start_url": ".",
+    "start_url": "up-neutral-down-prediction-webapp/",
     "display": "standalone",
     "theme_color": "#000000",
     "background_color": "#ffffff"
