@@ -1,7 +1,7 @@
 import './App.css';
 import React from 'react';
 import TradingView from './components/TradingView';
-import BackendInterface from './controllers/BackendInterface';
+// import BackendInterface from './controllers/BackendInterface';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import LatestPredictions from './components/LatestPredictions';
