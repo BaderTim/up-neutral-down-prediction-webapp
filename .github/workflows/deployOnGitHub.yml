@@ -20,7 +20,6 @@ jobs:
       - name: Build
         run: npm run build # The build command of your project
         
-      - uses: actions/checkout@v2
       - name: Find and Replace JS
         uses: jacobtomlinson/gha-find-replace@v2
         with:
