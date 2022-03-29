@@ -1,4 +1,4 @@
-class BackendInterface {
+export default class BackendInterface {
 
     domain;
 
