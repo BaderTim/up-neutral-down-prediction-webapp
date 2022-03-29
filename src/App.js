@@ -7,7 +7,9 @@ import TradingView from './components/TradingView';
 import LatestPredictions from './components/LatestPredictions';
 import ConfusionMatrix from './components/ConfusionMatrix';
 
+
 class App extends React.Component {
+
 
     constructor(props) {
         super(props);
@@ -19,6 +21,7 @@ class App extends React.Component {
             confusionMatrix: [[0.4, 0.5, 0.1], [0.05, 0.9, 0.05], [0.05, 0.4, 0.55]]
         }
     }
+
 
     componentDidMount() {
         // const bi = new BackendInterface("http://unexpected42.de");
@@ -70,7 +73,6 @@ class App extends React.Component {
             </div>
         );
     } // end of render
-
 
 
 } // end of class App
