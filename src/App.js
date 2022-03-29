@@ -2,7 +2,7 @@ import './App.css';
 import React from 'react';
 import { Spinner } from 'react-bootstrap';
 
-// import BackendInterface from './controllers/BackendInterface';
+import BackendInterface from './controllers/BackendInterface';
 import TradingView from './components/TradingView';
 import LatestPredictions from './components/LatestPredictions';
 import ConfusionMatrix from './components/ConfusionMatrix';
@@ -14,17 +14,40 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            predictions: [1, 0, -1, 0, -1, 0, 1],
-            groundTruths: [1, 1, 0, 0, -1, 0, 0],
-            currentPrediction: 0,
-            accuracy: "67,2%",
-            confusionMatrix: [[0.4, 0.5, 0.1], [0.05, 0.9, 0.05], [0.05, 0.4, 0.55]]
+            predictions: null,
+            groundTruths: null,
+            currentPrediction: null,
+            accuracy: "-",
+            confusionMatrix: null
         }
     }
 
 
     componentDidMount() {
-        // const bi = new BackendInterface("http://unexpected42.de");
+        const bi = new BackendInterface("http://unexpected42.de", "1337", "/v4_1");
+        bi.getAccuracy().then(accuracy => {
+            this.setState({
+                accuracy: accuracy.accuracy
+            });
+        });
+        bi.getCurrentPrediction().then(currentPrediction => {
+            this.setState({
+                currentPrediction: currentPrediction.prediction
+            });
+        });
+        bi.getPredictionsAndGroundTruths().then(predictionsAndGroundTruths => {
+            let preds = predictionsAndGroundTruths.predictionsAndGroundTruths.map(p => p.prediction);
+            let gts = predictionsAndGroundTruths.predictionsAndGroundTruths.map(gt => gt.groundTruth);
+            this.setState({
+                predictions: preds.slice(0, 8),
+                groundTruths: gts.slice(0, 8)
+            });
+        });
+        bi.getConfusionMatrix().then(confusionMatrix => {
+            this.setState({
+                confusionMatrix: confusionMatrix.confusionMatrix
+            });
+        });
     }
 
 
@@ -55,7 +78,7 @@ class App extends React.Component {
                             justifyContent: "center",
                             alignItems: "center"
                             }}>
-                            <Spinner animation="border"/>
+                            <Spinner animation="border" variant="primary"/>
                         </div>
                     )}
                 </div>
@@ -68,7 +91,19 @@ class App extends React.Component {
                     <div style={{width: "5%"}}/>
                     <div style={{width: "35%"}}>
                         <h2 className='lead' style={{marginLeft: "24px"}}>Confusion Matrix</h2>
-                        <ConfusionMatrix confusionMatrix={this.state.confusionMatrix}/>
+                        {this.state.confusionMatrix ? (
+                            <ConfusionMatrix confusionMatrix={this.state.confusionMatrix}/>
+                        ): (
+                            <div style={{
+                                height: "190px", 
+                                width: "100%", 
+                                display: "flex", 
+                                justifyContent: "center",
+                                alignItems: "center"
+                                }}>
+                                <Spinner animation="border" variant="primary"/>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

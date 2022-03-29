@@ -1,10 +1,19 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup'
+import { Spinner } from 'react-bootstrap';
 
 export default function SinglePrediction(props) {
 
     const {prediction, groundTruth, time} = props;
+
+    if(prediction === null) {
+        return <div style={{width: "18rem", margin: "auto", textAlign: "center"}}><Spinner animation="border" variant="primary" /></div>;
+    }
+
+    if(prediction === "error") {
+        return <div style={{width: "18rem", margin: "auto", textAlign: "center", color: "red"}}><strong>Error</strong></div>;
+    }
 
     return (
         <div style={{width: "18rem"}}>

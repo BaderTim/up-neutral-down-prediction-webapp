@@ -30,7 +30,7 @@ export default function ConfusionMatrix(props) {
                     </ListGroup>
                     {confusionMatrix.map((column, index) => {
                         return (
-                            <ListGroup>
+                            <ListGroup key={index}>
                                 <ListGroup.Item>
                                     {xLabel[index]}
                                 </ListGroup.Item>
