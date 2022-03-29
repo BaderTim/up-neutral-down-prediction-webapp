@@ -22,7 +22,7 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        const bi = new BackendInterface("http://unexpected42.de");
+        // const bi = new BackendInterface("http://unexpected42.de");
     }
 
 
