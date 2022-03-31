@@ -3,39 +3,27 @@ import SinglePrediction from './SinglePrediction';
 
 export default function LatestPredictions(props) {
 
-    const {predictions, groundTruths, currentPrediction, interval} = props;
+    const {predictions, groundTruths, currentPrediction, minutes, nextPredictionInMS} = props;
 
     const getTimeString = (timestamp) => {
         return `${('0' + new Date(timestamp).getHours()).slice(-2)}:${('0' + new Date(timestamp).getMinutes()).slice(-2)}`;
     }
 
-    const getIntervalInMinutes = (interval) => {
-        /**
-         * Reduces a sequence of names to initials.
-         * @param  {string} interval - 1m 3m 5m 15m 30m 1h 2h 4h 6h 8h 12h 1d 3d 1w 1M
-         * @return {number} - minutes
-         */
-        if (interval.includes('m')) {
-            return parseInt(interval.replace('m', ''));
+    const getTimeLeftString = (milliseconds) => {
+        const seconds = Math.floor((milliseconds / 1000) % 60);
+        const minutes = Math.floor((milliseconds / (60 * 1000)) % 60);
+        const hours = Math.floor((milliseconds / (60 * 60 * 1000)) % 24);
+        const days = Math.floor((milliseconds / (60 * 60 * 1000 * 24)));
+        if(days > 0) {
+            return `in ${('0' + days).slice(-2)}:${('0' + hours).slice(-2)}:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}`;
         }
-        if (interval.includes('h')) {
-            return parseInt(interval.replace('h', '')) * 60;
+        if(hours > 0) {
+            return `in ${('0' + hours).slice(-2)}:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}`;
         }
-        if (interval.includes('d')) {
-            return parseInt(interval.replace('d', '')) * 1440;
-        }
-        if (interval.includes('w')) {
-            return parseInt(interval.replace('w', '')) * 10080;
-        }
-        if (interval.includes('M')) {
-            return parseInt(interval.replace('M', '')) * 43200;
-        }
-        return 5; // default
+        return `in ${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}`;
     }
 
-    const minutes = getIntervalInMinutes(interval)
     const latestStep = Date.now() - (Date.now() % (60 * minutes * 1000));
-    const nextStep = latestStep + (60 * minutes * 1000);
 
     if(predictions.length === 0) {
         return <div className="display-6" style={{height: "164px", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", color: "red"}}><strong>Error</strong></div>
@@ -59,7 +47,7 @@ export default function LatestPredictions(props) {
             <SinglePrediction 
                 prediction={currentPrediction} 
                 groundTruth={currentPrediction} 
-                time={getTimeString(nextStep)} 
+                time={getTimeLeftString(nextPredictionInMS)} 
             />
         </div>
     );
