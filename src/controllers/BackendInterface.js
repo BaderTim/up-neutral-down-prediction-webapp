@@ -26,7 +26,7 @@ export default class BackendInterface {
                     return response.json();
                 } else {
                     console.log(response);
-                    return {name: "error", priceDifference: "error"};
+                    return {name: "error", priceDifference: "error", interval: "error", symbol: "error"};
                 }
         });
     } // end of getModel

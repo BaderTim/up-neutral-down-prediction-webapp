@@ -13,7 +13,7 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            model: {name: "loading", priceDifference: "loading"},
+            model: {name: "loading", priceDifference: "loading", interval: "...", symbol: "..."},
             predictions: null,
             groundTruths: null,
             currentPrediction: null,
@@ -23,9 +23,10 @@ class App extends React.Component {
     } // end of constructor
 
 
-    componentDidMount() {
-        const bi = new BackendInterface("http://unexpected42.de", "1337", "/v4_1");
-        bi.getModel().then(model => {
+    async componentDidMount() {
+        // const bi = new BackendInterface("https://unexpected42.de", "1337", "/v4_1");
+        const bi = new BackendInterface("http://localhost", "1337", "/v4_1");
+        await bi.getModel().then(model => {
             this.setState({model: model});
         });
         bi.getAccuracy().then(accuracy => {
@@ -66,9 +67,9 @@ class App extends React.Component {
                     maxWidth: "1000px",
                 }}
                 >
-                <h1 className='display-4'>up-neutral-down 5m</h1>
-                <h2 className='lead' style={{fontSize: "30px"}}>BTC price prediction</h2>
-                <p>Model '<strong>{this.state.model.name}</strong>' - Price Difference: <strong>{this.state.model.priceDifference}</strong> - Current Accuracy: <strong>{this.state.accuracy}</strong></p>
+                <h1 className='display-4'>up-neutral-down {this.state.model.interval}</h1>
+                <h2 className='lead' style={{fontSize: "30px"}}>{this.state.model.symbol} price prediction</h2>
+                <p>Model '<strong>{this.state.model.name}</strong>' | Price Difference: <strong>{this.state.model.priceDifference}%</strong> | Current Accuracy: <strong>{Math.round(this.state.accuracy * 100, 2)}%</strong></p>
                 <br/>
                 <div>
                 <h2 className='lead' style={{float: "left"}}>Latest Predictions</h2>
@@ -80,6 +81,7 @@ class App extends React.Component {
                             predictions={this.state.predictions} 
                             groundTruths={this.state.groundTruths} 
                             currentPrediction={this.state.currentPrediction}
+                            interval={this.state.model.interval}
                         />
                     ): (
                         <div style={{
