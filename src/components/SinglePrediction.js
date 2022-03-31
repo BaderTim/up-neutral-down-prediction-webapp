@@ -19,16 +19,16 @@ export default function SinglePrediction(props) {
         <div style={{width: "18rem"}}>
             <Card>
                 <ListGroup variant="flush" style={{textAlign: "center"}}>
-                    <ListGroup.Item variant={((prediction === 1) ? (prediction === groundTruth ? ("success") : ("danger")) : ("light"))}>
+                    <ListGroup.Item variant={((prediction === 1) ? (prediction === groundTruth ? ("success") : ("danger")) : (groundTruth === 1 ? ("warning") : ("light")))}>
                         Up
                     </ListGroup.Item>
                     <ListGroup.Item 
-                        variant={((prediction === 0) ? (prediction === groundTruth ? ("success") : ("danger")) : ("light"))}
+                        variant={((prediction === 0) ? (prediction === groundTruth ? ("success") : ("danger")) : (groundTruth === 0 ? ("warning") : ("light")))}
                     >
                         Neutral
                     </ListGroup.Item>
                     <ListGroup.Item 
-                        variant={((prediction === -1) ? (prediction === groundTruth ? ("success") : ("danger")) : ("light"))}
+                        variant={((prediction === -1) ? (prediction === groundTruth ? ("success") : ("danger")) : (groundTruth === -1 ? ("warning") : ("light")))}
                     >
                         Down
                     </ListGroup.Item>

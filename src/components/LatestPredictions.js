@@ -27,6 +27,9 @@ export default function LatestPredictions(props) {
         if (interval.includes('w')) {
             return parseInt(interval.replace('w', '')) * 10080;
         }
+        if (interval.includes('M')) {
+            return parseInt(interval.replace('M', '')) * 43200;
+        }
         return 5; // default
     }
 
