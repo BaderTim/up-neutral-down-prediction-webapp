@@ -3,7 +3,7 @@ import ListGroup from 'react-bootstrap/ListGroup'
 
 export default function ConfusionMatrix(props) {
 
-    const { confusionMatrix } = props;
+    const { confusionMatrix, history } = props;
     const xLabel = ["up", "neutral", "down"]
     const getRGB = (value) => {
         const color = (1-value/2) * 255;
@@ -17,10 +17,10 @@ export default function ConfusionMatrix(props) {
                 textAlign: "right",
                 marginTop: "24px"
                 }}
-                >Predictions
+                ><strong>Predictions</strong>
             </div>
             <div>
-                <div style={{textAlign: "left"}}>Ground Truth</div>
+                <div style={{textAlign: "left"}}><strong>Ground Truth</strong></div>
                 <div style={{display: "flex", textAlign: "center"}}>
                     <ListGroup>
                         <ListGroup.Item>-</ListGroup.Item>
@@ -47,6 +47,7 @@ export default function ConfusionMatrix(props) {
                         )})
                     }
                 </div>
+                <div style={{textAlign: "center", color: "grey"}}>data from latest {history} predictions</div>
             </div>
         </div>
     );

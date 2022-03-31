@@ -18,6 +18,7 @@ class App extends React.Component {
             groundTruths: null,
             currentPrediction: null,
             accuracy: "loading",
+            history: 0,
             confusionMatrix: null,
             UIloopID: null,
             dataFetcherRunning: false,
@@ -31,7 +32,8 @@ class App extends React.Component {
             console.log("Updating predictions...");
             bi.getAccuracy().then(accuracy => {
                 this.setState({
-                    accuracy: accuracy.accuracy
+                    accuracy: accuracy.accuracy,
+                    history: accuracy.history
                 });
             });
             bi.getCurrentPrediction().then(currentPrediction => {
@@ -60,8 +62,8 @@ class App extends React.Component {
 
 
     async componentDidMount() {
-        // const bi = new BackendInterface("https://unexpected42.de", "1337", "/v4_1");
-        const bi = new BackendInterface("http://localhost", "1337", "/v4_1");
+        const bi = new BackendInterface("https://unexpected42.de", "1337", "/v4_1");
+        //const bi = new BackendInterface("http://localhost", "1337", "/v4_1");
         await bi.getModel().then(model => {
             this.setState({model: model});
         });
@@ -100,7 +102,7 @@ class App extends React.Component {
                 >
                 <h1 className='display-4'>up-neutral-down {this.state.model.interval}</h1>
                 <h2 className='lead' style={{fontSize: "30px"}}>{this.state.model.symbol} price prediction</h2>
-                <p>Model '<strong>{this.state.model.name}</strong>' | Price Difference: <strong>{this.state.model.priceDifference}%</strong> | Current Accuracy: <strong>{Math.round(this.state.accuracy * 100, 2)}%</strong></p>
+                <p>Model '<strong>{this.state.model.name}</strong>' | Price Difference: <strong>{this.state.model.priceDifference}%</strong> | Current Accuracy: <strong>{Math.round(this.state.accuracy * 100, 2)}%</strong> <span style={{color: "grey"}}>(latest {this.state.history} predictions)</span></p>
                 <br/>
                 <div>
                 <h2 className='lead' style={{float: "left"}}>Latest Predictions</h2>
@@ -137,7 +139,10 @@ class App extends React.Component {
                     <div style={{width: "35%"}}>
                         <h2 className='lead' style={{marginLeft: "24px"}}>Confusion Matrix</h2>
                         {this.state.confusionMatrix ? (
-                            <ConfusionMatrix confusionMatrix={this.state.confusionMatrix}/>
+                            <ConfusionMatrix 
+                                confusionMatrix={this.state.confusionMatrix}
+                                history={this.state.history}
+                            />
                         ): (
                             <div style={{
                                 height: "190px", 
