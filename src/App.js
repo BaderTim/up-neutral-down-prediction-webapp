@@ -194,7 +194,7 @@ class App extends React.Component {
         return setTimeout(() => {
             const minutes = this.getIntervalInMinutes(this.state.model.interval);
             this.fetchData()
-            const timeLeftUntilNextPredictionMS = (60 * minutes * 1000) - new Date() % (60 * minutes * 1000) + 10000
+            const timeLeftUntilNextPredictionMS = (60 * minutes * 1000) - new Date() % (60 * minutes * 1000) + 20000
             clearTimeout(this.state.dataFetcherID);
             this.setState({
                 nextPredictionInMS: timeLeftUntilNextPredictionMS,
