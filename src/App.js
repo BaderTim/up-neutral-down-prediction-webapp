@@ -1,5 +1,5 @@
 import React from 'react';
-import { Spinner } from 'react-bootstrap';
+import { Spinner, Dropdown, DropdownButton  } from 'react-bootstrap';
 
 import BackendInterface from './controllers/BackendInterface';
 import TradingView from './components/TradingView';
@@ -9,71 +9,44 @@ import ConfusionMatrix from './components/ConfusionMatrix';
 
 class App extends React.Component {
 
-
     constructor(props) {
         super(props);
+        const ip = "https://unexpected42.de"; // "http://localhost:1337";
         this.state = {
-            model: {name: "loading", priceDifference: "loading", interval: "...", symbol: "..."},
+            ip: ip,
+            bi: new BackendInterface(ip, "1337", null),
+            apis: [],
+            model: {name: "loading", priceDifference: "loading", spot: true, interval: "...", symbol: "..."},
             predictions: null,
             groundTruths: null,
             currentPrediction: null,
             accuracy: "loading",
             history: 0,
+            profit: 0,
+            wantedHistory: 0,
             confusionMatrix: null,
             UIloopID: null,
-            dataFetcherRunning: false,
+            dataFetcherID: null,
             nextPredictionInMS: 0
         }
     } // end of constructor
 
 
-    async dataFetcher(bi, minutes) {
-        while(this.state.dataFetcherRunning) {
-            console.log("Updating predictions...");
-            bi.getAccuracy().then(accuracy => {
-                this.setState({
-                    accuracy: accuracy.accuracy,
-                    history: accuracy.history
-                });
-            });
-            bi.getCurrentPrediction().then(currentPrediction => {
-                this.setState({
-                    currentPrediction: currentPrediction.prediction
-                });
-            });
-            bi.getPredictionsAndGroundTruths().then(predictionsAndGroundTruths => {
-                let preds = predictionsAndGroundTruths.predictionsAndGroundTruths.map(p => p.prediction);
-                let gts = predictionsAndGroundTruths.predictionsAndGroundTruths.map(gt => gt.groundTruth);
-                this.setState({
-                    predictions: preds.slice(0, 8).reverse(),
-                    groundTruths: gts.slice(0, 8).reverse()
-                });
-            });
-            bi.getConfusionMatrix().then(confusionMatrix => {
-                this.setState({
-                    confusionMatrix: confusionMatrix.confusionMatrix
-                });
-            });
-            const timeLeftUntilNextPredictionMS = (60 * minutes * 1000) - new Date() % (60 * minutes * 1000) + 10000
-            this.setState({nextPredictionInMS: timeLeftUntilNextPredictionMS});
-            await new Promise(r => setTimeout(r, timeLeftUntilNextPredictionMS)); // sleep
-        }
-    }
-
-
     async componentDidMount() {
-        const bi = new BackendInterface("https://unexpected42.de", "1337", "/v4_1");
-        //const bi = new BackendInterface("http://localhost", "1337", "/v4_1");
-        await bi.getModel().then(model => {
+        await this.state.bi.getAPIs().then(apis => {
+            this.setState({
+                apis: apis.paths,
+                bi: new BackendInterface(this.state.ip, "1337", apis.paths[0].slice(0, -1)), 
+            });
+        });
+        await this.state.bi.getModel().then(model => {
             this.setState({model: model});
         });
-        const minutes = this.getIntervalInMinutes(this.state.model.interval);
         // start data fetcher
-        if(!this.state.dataFetcherRunning) {
+        if(!this.state.dataFetcherID) {
             this.setState({
-                dataFetcherRunning: true
+                dataFetcherID:  this.dataFetcher()
             });
-            this.dataFetcher(bi, minutes);
         }
         // start UI loop
         if(this.state.UIloopID === null) {
@@ -89,7 +62,6 @@ class App extends React.Component {
 
 
     render() {
-
         return (
             <div className="container"
                 style={{
@@ -100,9 +72,9 @@ class App extends React.Component {
                     maxWidth: "1000px",
                 }}
                 >
-                <h1 className='display-4'>up-neutral-down {this.state.model.interval}</h1>
+                <h1 className='display-4' style={{display: "flex"}}>up-neutral-down {this.state.model.interval} {this.selectModel()}</h1>
                 <h2 className='lead' style={{fontSize: "30px"}}>{this.state.model.symbol} price prediction</h2>
-                <p>Model '<strong>{this.state.model.name}</strong>' | Price Difference: <strong>{this.state.model.priceDifference}%</strong> | Current Accuracy: <strong>{Math.round(this.state.accuracy * 100, 2)}%</strong> <span style={{color: "grey"}}>(latest {this.state.history} predictions)</span></p>
+                <p>Model '<strong>{this.state.model.name}</strong>' | Price Difference: <strong>{this.state.model.priceDifference}%</strong> | Current Accuracy: <strong>{Math.round(this.state.accuracy * 100, 2)}%</strong> | Current Profit: <strong>{this.state.profit}$</strong> <span style={{color: "grey"}}>(latest {this.state.history} predictions, {this.changeProfit("change")})</span></p>
                 <br/>
                 <div>
                 <h2 className='lead' style={{float: "left"}}>Latest Predictions</h2>
@@ -133,7 +105,11 @@ class App extends React.Component {
                 <div style={{display: "flex"}}>
                     <div style={{width: "60%"}}>
                         <h2 className='lead'>Current BTC Chart</h2>
-                        <TradingView/>
+                        <TradingView 
+                            interval={this.state.model.interval} 
+                            symbol={this.state.model.symbol}
+                            spot={this.state.model.spot}
+                        />
                     </div>
                     <div style={{width: "5%"}}/>
                     <div style={{width: "35%"}}>
@@ -161,6 +137,105 @@ class App extends React.Component {
           
     } // end of render
 
+
+    //
+    // small complex components
+    //
+
+    changeProfit = (childs) => {
+        return <span style={{textDecoration: "underline", cursor: "pointer"}} onClick={async () => {
+            const res = prompt("How far back do you want the prediction history to be? (in predictions, 'max' = complete history)", this.state.history);
+            if(res !== null && res !== "" && !isNaN(Number(res))) {
+                await this.setState({
+                    wantedHistory: Number(res)
+                });
+                this.fetchData();
+            }
+        }}>{childs}</span>
+    } // end of changeProfit
+
+    selectModel = () => {
+        return (
+            <DropdownButton  title={this.state.model.name} style={{marginLeft: "20px"}}>
+                {this.state.apis.map((api, key) => {
+
+                    return <Dropdown.Item key={key} onClick={async () => {
+                        await this.setState({
+                            bi: new BackendInterface(this.state.ip, "1337", api.slice(0, -1)),
+                            model: {name: "loading", priceDifference: "loading", interval: "...", symbol: "..."},
+                            predictions: null,
+                            groundTruths: null,
+                            currentPrediction: null,
+                            accuracy: "loading",
+                            history: 0,
+                            profit: 0,
+                            wantedHistory: 0,
+                            confusionMatrix: null,
+                        });
+                        await this.state.bi.getModel().then(model => {
+                            this.setState({model: model});
+                        });
+                        clearTimeout(this.state.dataFetcherID);
+                        this.setState({
+                            dataFetcherID: this.dataFetcher()
+                        });
+                    }}>{api.slice(1, -1)}</Dropdown.Item>
+                })}
+            </DropdownButton >
+        )
+    } // end of selectModel
+
+
+    //
+    // helper functions
+    //
+
+    async dataFetcher(startInMS = 0) {
+        return setTimeout(() => {
+            const minutes = this.getIntervalInMinutes(this.state.model.interval);
+            this.fetchData()
+            const timeLeftUntilNextPredictionMS = (60 * minutes * 1000) - new Date() % (60 * minutes * 1000) + 10000
+            clearTimeout(this.state.dataFetcherID);
+            this.setState({
+                nextPredictionInMS: timeLeftUntilNextPredictionMS,
+                dataFetcherID: this.dataFetcher(timeLeftUntilNextPredictionMS)
+            });
+        }, startInMS);
+    } // end of dataFetcher
+
+    async fetchData() {
+        const bi = this.state.bi;
+        console.log("Updating predictions...");
+        bi.getAccuracy(this.state.wantedHistory).then(accuracy => {
+            this.setState({
+                accuracy: accuracy.accuracy,
+                history: accuracy.history
+            });
+        });
+        bi.getProfit(this.state.wantedHistory).then(profit => {
+            this.setState({
+                profit: profit.profit,
+            });
+        });
+        bi.getCurrentPrediction().then(currentPrediction => {
+            this.setState({
+                currentPrediction: currentPrediction.prediction
+            });
+        });
+        bi.getPredictionsAndGroundTruths(8).then(predictionsAndGroundTruths => {
+            let preds = predictionsAndGroundTruths.predictionsAndGroundTruths.map(p => p.prediction);
+            let gts = predictionsAndGroundTruths.predictionsAndGroundTruths.map(gt => gt.groundTruth);
+            this.setState({
+                predictions: preds.slice(0, 8).reverse(),
+                groundTruths: gts.slice(0, 8).reverse()
+            });
+        });
+        bi.getConfusionMatrix(this.state.wantedHistory).then(confusionMatrix => {
+            this.setState({
+                confusionMatrix: confusionMatrix.confusionMatrix
+            });
+        });
+    } // end of fetchData
 
     getIntervalInMinutes = (interval) => {
         /**

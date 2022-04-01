@@ -18,6 +18,20 @@ export default class BackendInterface {
     }
 
 
+    async getAPIs() {
+        const url = this.domain + ":" + this.port;
+        return fetch(url, this.options)
+            .then(response => {
+                if(response.ok) {
+                    return response.json();
+                } else {
+                    console.log(response);
+                    return {paths: ["error "]};
+                }
+        });
+    } // end of getAPIs
+
+
     async getModel() {
         const url = this.domain + ":" + this.port + this.api + "/model";
         return fetch(url, this.options)
@@ -32,15 +46,15 @@ export default class BackendInterface {
     } // end of getModel
 
 
-    async getAccuracy() {
-        const url = this.domain + ":" + this.port + this.api + "/accuracy";
+    async getAccuracy(wantedHistory=0) {
+        const url = this.domain + ":" + this.port + this.api + "/accuracy?history=" + wantedHistory;
         return fetch(url, this.options)
             .then(response => {
                 if(response.ok) {
                     return response.json();
                 } else {
                     console.log(response);
-                    return {accuracy: "error"};
+                    return {accuracy: "error", history: "error"};
                 }
         });
     } // end of getAccuracy
@@ -60,8 +74,8 @@ export default class BackendInterface {
     } // end of getCurrentPrediction
 
 
-    async getPredictionsAndGroundTruths() {
-        const url = this.domain + ":" + this.port + this.api + "/predictionsAndGroundTruths";
+    async getPredictionsAndGroundTruths(wantedHistory=0) {
+        const url = this.domain + ":" + this.port + this.api + "/predictionsAndGroundTruths?history=" + wantedHistory;
         return fetch(url, this.options)
             .then(response => {
                 if(response.ok) {
@@ -74,8 +88,8 @@ export default class BackendInterface {
     } // end of getPredictionsAndGroundTruths
 
 
-    async getConfusionMatrix() {
-        const url = this.domain + ":" + this.port + this.api + "/confusionMatrix";
+    async getConfusionMatrix(wantedHistory=0) {
+        const url = this.domain + ":" + this.port + this.api + "/confusionMatrix?history=" + wantedHistory;
         return fetch(url, this.options)
             .then(response => {
                 if(response.ok) {
@@ -86,6 +100,20 @@ export default class BackendInterface {
                 }
         });
     } // end of getConfusionMatrix
+
+
+    async getProfit(wantedHistory=0) {
+        const url = this.domain + ":" + this.port + this.api + "/profit?history=" + wantedHistory;
+        return fetch(url, this.options)
+            .then(response => {
+                if(response.ok) {
+                    return response.json();
+                } else {
+                    console.log(response);
+                    return {profit: "error", history: "error"};
+                }
+        });
+    } // end of getProfit
 
 
 }
