@@ -11,7 +11,7 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-        const ip = "https://unexpected42.de"; // "http://localhost:1337";
+        const ip = "https://unexpected42.de";// "https://unexpected42.de"; // "http://localhost";
         this.state = {
             ip: ip,
             bi: new BackendInterface(ip, "1337", null),
@@ -23,7 +23,7 @@ class App extends React.Component {
             accuracy: "loading",
             history: 0,
             profit: 0,
-            wantedHistory: 0,
+            wantedHistory: 24,
             confusionMatrix: null,
             UIloopID: null,
             dataFetcherID: null,
@@ -74,10 +74,10 @@ class App extends React.Component {
                 >
                 <h1 className='display-4' style={{display: "flex"}}>up-neutral-down {this.state.model.interval} {this.selectModel()}</h1>
                 <h2 className='lead' style={{fontSize: "30px"}}>{this.state.model.symbol} price prediction</h2>
-                <p>Model '<strong>{this.state.model.name}</strong>' | Price Difference: <strong>{this.state.model.priceDifference}%</strong> | Current Accuracy: <strong>{Math.round(this.state.accuracy * 100, 2)}%</strong> | Current Profit: <strong>{this.state.profit}$</strong> <span style={{color: "grey"}}>(latest {this.state.history} predictions, {this.changeProfit("change")})</span></p>
+                <p>Model '<strong>{this.state.model.name}</strong>' | Price Difference: <strong>{this.state.model.priceDifference}%</strong> | Current Accuracy: <strong>{Math.round(this.state.accuracy * 100, 2)}%</strong> | Current Profit: <strong>{this.state.profit}$</strong> <span style={{color: "grey"}}>(latest {this.state.history} predictions, {this.changeHistory(`change from '${this.state.wantedHistory}'`)})</span></p>
                 <br/>
                 <div>
-                <h2 className='lead' style={{float: "left"}}>Latest Predictions</h2>
+                <h2 className='lead' style={{float: "left"}}>Latest 8 Predictions</h2>
                 <h2 className='lead' style={{float: "right"}}>Upcoming</h2>
                 </div>
                 <div>
@@ -142,17 +142,17 @@ class App extends React.Component {
     // small complex components
     //
 
-    changeProfit = (childs) => {
+    changeHistory = (childs) => {
         return <span style={{textDecoration: "underline", cursor: "pointer"}} onClick={async () => {
-            const res = prompt("How far back do you want the prediction history to be? (in predictions, 'max' = complete history)", this.state.history);
-            if(res !== null && res !== "" && !isNaN(Number(res))) {
+            const res = prompt("How far back do you want the prediction history to be? (in predictions, 'max' = complete history)", this.state.wantedHistory);
+            if(res !== null && res !== "" && (!isNaN(Number(res)) || res === "max")) {
                 await this.setState({
-                    wantedHistory: Number(res)
+                    wantedHistory: res
                 });
                 this.fetchData();
             }
         }}>{childs}</span>
-    } // end of changeProfit
+    } // end of changeHistory
 
     selectModel = () => {
         return (
@@ -167,9 +167,7 @@ class App extends React.Component {
                             groundTruths: null,
                             currentPrediction: null,
                             accuracy: "loading",
-                            history: 0,
                             profit: 0,
-                            wantedHistory: 0,
                             confusionMatrix: null,
                         });
                         await this.state.bi.getModel().then(model => {
