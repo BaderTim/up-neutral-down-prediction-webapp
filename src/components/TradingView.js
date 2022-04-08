@@ -29,12 +29,13 @@ export default function TradingView(props) {
     return ( 
         <TradingViewWidget 
             symbol = {`BINANCE:${props.symbol}${props.spot ? '' : 'PERP'}`}
-            theme = "Light"
+            theme = {props.mode.dark ? "Dark" : "Light"}
             locale = "de_DE"
             timezone = "Etc/UTC"
             hide_top_toolbar = { true }
             interval = {convertInterval(props.interval)}
             autosize = { true }
+
         />
     )
 }

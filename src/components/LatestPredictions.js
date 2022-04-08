@@ -39,6 +39,7 @@ export default function LatestPredictions(props) {
                             prediction={prediction} 
                             groundTruth={groundTruths[index]} 
                             time={getTimeString(currentStep)}
+                            mode={props.mode}
                         />
             })}
 
@@ -48,6 +49,7 @@ export default function LatestPredictions(props) {
                 prediction={currentPrediction} 
                 groundTruth={currentPrediction} 
                 time={getTimeLeftString(nextPredictionInMS)} 
+                mode={props.mode}
             />
         </div>
     );

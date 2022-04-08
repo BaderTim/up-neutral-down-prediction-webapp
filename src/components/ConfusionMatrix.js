@@ -4,9 +4,14 @@ import ListGroup from 'react-bootstrap/ListGroup'
 export default function ConfusionMatrix(props) {
 
     const { confusionMatrix, history } = props;
+    const { dark, componentColor} = props.mode;
     const xLabel = ["up", "neutral", "down"]
     const getRGB = (value) => {
-        const color = (1-value/2) * 255;
+        let buffer = 1;
+        if(dark) {
+            buffer = 0.8;
+        }
+        const color = (buffer-value/2) * 255;
         return `rgb(${color}, ${color}, 255)`;
     }
 
@@ -23,15 +28,15 @@ export default function ConfusionMatrix(props) {
                 <div style={{textAlign: "left"}}><strong>Ground Truth</strong></div>
                 <div style={{display: "flex", textAlign: "center"}}>
                     <ListGroup>
-                        <ListGroup.Item>-</ListGroup.Item>
-                        <ListGroup.Item>up</ListGroup.Item>
-                        <ListGroup.Item>neutral</ListGroup.Item>
-                        <ListGroup.Item>down</ListGroup.Item>
+                        <ListGroup.Item variant={componentColor}>-</ListGroup.Item>
+                        <ListGroup.Item variant={componentColor}>up</ListGroup.Item>
+                        <ListGroup.Item variant={componentColor}>neutral</ListGroup.Item>
+                        <ListGroup.Item variant={componentColor}>down</ListGroup.Item>
                     </ListGroup>
                     {confusionMatrix.map((column, index) => {
                         return (
                             <ListGroup key={index}>
-                                <ListGroup.Item>
+                                <ListGroup.Item variant={componentColor}>
                                     {xLabel[index]}
                                 </ListGroup.Item>
                                 <ListGroup.Item style={{backgroundColor: getRGB(column[0])}}>

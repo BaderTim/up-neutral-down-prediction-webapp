@@ -1,5 +1,5 @@
 import React from 'react';
-import { Spinner, Dropdown, DropdownButton  } from 'react-bootstrap';
+import { Spinner, Dropdown, DropdownButton, ToggleButton } from 'react-bootstrap';
 
 import BackendInterface from './controllers/BackendInterface';
 import TradingView from './components/TradingView';
@@ -27,7 +27,8 @@ class App extends React.Component {
             confusionMatrix: null,
             UIloopID: null,
             dataFetcherID: null,
-            nextPredictionInMS: 0
+            nextPredictionInMS: 0,
+            mode: {dark: false, textColor: "black", componentColor: "light", backgroundColor: "#ffffff"}
         }
     } // end of constructor
 
@@ -62,6 +63,8 @@ class App extends React.Component {
 
 
     render() {
+        document.body.style.backgroundColor = this.state.mode.backgroundColor;
+        document.body.style.color = this.state.mode.textColor;
         return (
             <div className="container"
                 style={{
@@ -72,7 +75,10 @@ class App extends React.Component {
                     maxWidth: "1000px",
                 }}
                 >
-                <h1 className='display-4' style={{display: "flex"}}>up-neutral-down {this.state.model.interval} {this.selectModel()}</h1>
+                <div style={{display: "flex", alignItems: "flex-end", justifyContent: "space-between"}}>
+                    <h1 className='display-4' style={{display: "flex", alignItems: "flex-end"}}>up-neutral-down {this.state.model.interval} {this.selectModel()}</h1>
+                    {this.darkModeSelector()}
+                </div>
                 <h2 className='lead' style={{fontSize: "30px"}}>{this.state.model.symbol} price prediction</h2>
                 <p>Model '<strong>{this.state.model.name}</strong>' | Price Difference: <strong>{this.state.model.priceDifference}%</strong> | Current Accuracy: <strong>{Math.round(this.state.accuracy * 100, 2)}%</strong> | Current Profit: <strong>{this.state.profit}$</strong> <span style={{color: "grey"}}>(latest {this.state.history} predictions, {this.changeHistory(`change from '${this.state.wantedHistory}'`)})</span></p>
                 <br/>
@@ -88,6 +94,7 @@ class App extends React.Component {
                             currentPrediction={this.state.currentPrediction}
                             minutes={this.getIntervalInMinutes(this.state.model.interval)}
                             nextPredictionInMS={this.state.nextPredictionInMS}
+                            mode={this.state.mode}
                         />
                     ): (
                         <div style={{
@@ -109,6 +116,7 @@ class App extends React.Component {
                             interval={this.state.model.interval} 
                             symbol={this.state.model.symbol}
                             spot={this.state.model.spot}
+                            mode={this.state.mode}
                         />
                     </div>
                     <div style={{width: "5%"}}/>
@@ -118,6 +126,7 @@ class App extends React.Component {
                             <ConfusionMatrix 
                                 confusionMatrix={this.state.confusionMatrix}
                                 history={this.state.history}
+                                mode={this.state.mode}
                             />
                         ): (
                             <div style={{
@@ -141,6 +150,28 @@ class App extends React.Component {
     //
     // small complex components
     //
+
+    darkModeSelector = () => {
+        return (
+            <ToggleButton
+                style={{marginLeft: "20px"}}
+                className="mb-3"
+                id="toggle-check"
+                type="checkbox"
+                variant={this.state.mode.dark ? "light" : "secondary"}
+                checked={this.state.mode.dark}
+                onChange={() => {
+                    if(this.state.mode.dark) {
+                        this.setState({mode: {dark: false, textColor: "black", componentColor: "light", backgroundColor: "#ffffff"}})
+                    } else {
+                        this.setState({mode: {dark: true, textColor: "#cccccc", componentColor: "dark", backgroundColor: "#1f1f1f"}})
+                    }
+                }}
+            >
+                {this.state.mode.dark ? "☀️ Light Mode" : "🌑 Dark Mode"}
+            </ToggleButton>
+        )
+    }
 
     changeHistory = (childs) => {
         return <span style={{textDecoration: "underline", cursor: "pointer"}} onClick={async () => {
