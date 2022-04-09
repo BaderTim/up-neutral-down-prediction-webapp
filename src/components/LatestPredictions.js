@@ -3,7 +3,7 @@ import SinglePrediction from './SinglePrediction';
 
 export default function LatestPredictions(props) {
 
-    const {predictions, groundTruths, currentPrediction, minutes, nextPredictionInMS} = props;
+    const {predictions, groundTruths, currentPrediction, minutes, nextPredictionInMS, unsure} = props;
 
     const getTimeString = (timestamp) => {
         return `${('0' + new Date(timestamp).getHours()).slice(-2)}:${('0' + new Date(timestamp).getMinutes()).slice(-2)}`;
@@ -40,6 +40,7 @@ export default function LatestPredictions(props) {
                             groundTruth={groundTruths[index]} 
                             time={getTimeString(currentStep)}
                             mode={props.mode}
+                            unsure={unsure}
                         />
             })}
 
@@ -50,6 +51,7 @@ export default function LatestPredictions(props) {
                 groundTruth={currentPrediction} 
                 time={getTimeLeftString(nextPredictionInMS)} 
                 mode={props.mode}
+                unsure={unsure}
             />
         </div>
     );

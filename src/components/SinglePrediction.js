@@ -5,8 +5,8 @@ import { Spinner } from 'react-bootstrap';
 
 export default function SinglePrediction(props) {
 
-    const {prediction, groundTruth, time} = props;
-    const { componentColor} = props.mode;
+    const {prediction, groundTruth, time, unsure} = props;
+    const {componentColor} = props.mode;
 
     if(prediction === null) {
         return <div style={{width: "18rem", margin: "auto", textAlign: "center"}}><Spinner animation="border" variant="primary" /></div>;
@@ -20,6 +20,11 @@ export default function SinglePrediction(props) {
         <div style={{width: "18rem"}}>
             <Card bg={componentColor}>
                 <ListGroup variant="flush" style={{textAlign: "center"}}>
+                    {unsure > 0 && (<ListGroup.Item style={{marginBottom: "10px"}}
+                        variant={(prediction === 2) ? ("primary") : (componentColor)}
+                    >
+                        Unsure
+                    </ListGroup.Item>)}
                     <ListGroup.Item variant={((prediction === 1) ? (prediction === groundTruth ? ("success") : ("danger")) : (groundTruth === 1 ? ("warning") : (componentColor)))}>
                         Up
                     </ListGroup.Item>
@@ -33,6 +38,7 @@ export default function SinglePrediction(props) {
                     >
                         Down
                     </ListGroup.Item>
+                
                 </ListGroup>
             </Card>
             <p className="fw-lighter" style={{textAlign: "center"}}>{time}</p>

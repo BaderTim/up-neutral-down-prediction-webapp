@@ -11,12 +11,12 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-        const ip = "https://unexpected42.de";// "https://unexpected42.de"; // "http://localhost";
+        const ip = "http://localhost";// "https://unexpected42.de"; // "http://localhost";
         this.state = {
             ip: ip,
             bi: new BackendInterface(ip, "1337", null),
             apis: [],
-            model: {name: "loading", priceDifference: "loading", spot: true, interval: "...", symbol: "..."},
+            model: {name: "loading", priceDifference: "loading", spot: true, interval: "...", symbol: "...", unsure: 0},
             predictions: null,
             groundTruths: null,
             currentPrediction: null,
@@ -83,7 +83,7 @@ class App extends React.Component {
                 <p>Model '<strong>{this.state.model.name}</strong>' | Price Difference: <strong>{this.state.model.priceDifference}%</strong> | Current Accuracy: <strong>{Math.round(this.state.accuracy * 100, 2)}%</strong> | Current Profit: <strong>{this.state.profit}$</strong> <span style={{color: "grey"}}>(latest {this.state.history} predictions, {this.changeHistory(`change from '${this.state.wantedHistory}'`)})</span></p>
                 <br/>
                 <div>
-                <h2 className='lead' style={{float: "left"}}>Latest 8 Predictions</h2>
+                <h2 className='lead' style={{float: "left"}}>Latest 8 Predictions {this.state.model.unsure > 0 && (<span style={{color: "grey", fontSize: "15px"}}>(unsure at {this.state.model.unsure} points difference or less between primary prediction and any other)</span>)}</h2>
                 <h2 className='lead' style={{float: "right"}}>Upcoming</h2>
                 </div>
                 <div>
@@ -95,6 +95,7 @@ class App extends React.Component {
                             minutes={this.getIntervalInMinutes(this.state.model.interval)}
                             nextPredictionInMS={this.state.nextPredictionInMS}
                             mode={this.state.mode}
+                            unsure={this.state.model.unsure}
                         />
                     ): (
                         <div style={{

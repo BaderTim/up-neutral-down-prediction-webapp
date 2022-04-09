@@ -40,7 +40,7 @@ export default class BackendInterface {
                     return response.json();
                 } else {
                     console.log(response);
-                    return {name: "error", priceDifference: "error", interval: "error", symbol: "error"};
+                    return {name: "error", priceDifference: "error", interval: "error", symbol: "error", spot: "error", unsure: 0};
                 }
         });
     } // end of getModel
