@@ -18,13 +18,17 @@ export default function SinglePrediction(props) {
 
     return (
         <div style={{width: "18rem"}}>
-            <Card bg={componentColor}>
+            {unsure > 0 && (<Card bg={componentColor} style={{marginBottom: "10px"}}>
                 <ListGroup variant="flush" style={{textAlign: "center"}}>
-                    {unsure > 0 && (<ListGroup.Item style={{marginBottom: "10px"}}
+                    <ListGroup.Item
                         variant={(prediction === 2) ? ("primary") : (componentColor)}
                     >
                         Unsure
-                    </ListGroup.Item>)}
+                    </ListGroup.Item>
+                </ListGroup>
+            </Card>)}
+            <Card bg={componentColor}>
+                <ListGroup variant="flush" style={{textAlign: "center"}}>
                     <ListGroup.Item variant={((prediction === 1) ? (prediction === groundTruth ? ("success") : ("danger")) : (groundTruth === 1 ? ("warning") : (componentColor)))}>
                         Up
                     </ListGroup.Item>

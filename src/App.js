@@ -83,7 +83,7 @@ class App extends React.Component {
                 <p>Model '<strong>{this.state.model.name}</strong>' | Price Difference: <strong>{this.state.model.priceDifference}%</strong> | Current Accuracy: <strong>{Math.round(this.state.accuracy * 100, 2)}%</strong> | Current Profit: <strong>{this.state.profit}$</strong> <span style={{color: "grey"}}>(latest {this.state.history} predictions, {this.changeHistory(`change from '${this.state.wantedHistory}'`)})</span></p>
                 <br/>
                 <div>
-                <h2 className='lead' style={{float: "left"}}>Latest 8 Predictions {this.state.model.unsure > 0 && (<span style={{color: "grey", fontSize: "15px"}}>(unsure at {this.state.model.unsure} points difference or less between primary prediction and any other)</span>)}</h2>
+                <h2 className='lead' style={{float: "left"}}>Latest 8 Predictions {this.state.model.unsure > 0 && (<span style={{color: "grey", fontSize: "15px"}}>(unsure at {this.state.model.unsure*100}% difference or less between primary prediction and any other)</span>)}</h2>
                 <h2 className='lead' style={{float: "right"}}>Upcoming</h2>
                 </div>
                 <div>
