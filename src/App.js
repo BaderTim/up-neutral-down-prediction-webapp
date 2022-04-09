@@ -11,7 +11,7 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-        const ip = "http://localhost";// "https://unexpected42.de"; // "http://localhost";
+        const ip = "https://unexpected42.de";// "https://unexpected42.de"; // "http://localhost";
         this.state = {
             ip: ip,
             bi: new BackendInterface(ip, "1337", null),
